@@ -1,0 +1,122 @@
+{% macro form_group(form, fields, displayonly=False) -%}
+
+	{% for field in fields %}
+		{% if field.type == 'BooleanField' %}
+		  <div class="checkbox{% if field.errors %} has-error{% endif %}">
+		    <label>
+		      {{ field() }}&nbsp;{{ field.description.help }}
+		    	{% if field.errors %}<span style="color: red;"> - {{field.errors[0]}}</span>{% endif %}
+		    </label>
+		  </div>
+		{% elif field.type == 'DateField' %}
+		  <div class="form-group{% if field.errors %} has-error{% endif %}">
+		    <label for="{{ field.name }}" class="control-label">{{ field.label }}</label>
+		      {% if displayonly %}
+		        <div class="form-control" style="border: none;">{{ field.data }}</div>
+		      {% else %}
+  		        {{ field(class="form-control", placeholder=field.description.placeholder,
+  		                 years=range(1999, 1925, -1)) }}
+              {% endif %}
+
+	    	  {% if field.errors %}<span class="text-danger">{{field.errors[0]}}</span><br/>{% endif %}
+		      {{ field.description.help }}
+		  </div>
+		{% else %}
+		  <div class="form-group{% if field.errors %} has-error{% endif %}">
+		      {{ field.label(class="control-label") }}
+		      {% if displayonly %}
+		        <div class="form-control" style="border: none;">{{ field.data }}</div>
+		      {% else %}
+  		        {{ field(class="form-control", placeholder=field.description.placeholder) }}
+              {% endif %}
+
+		    	{% if field.errors %}<span class="text-danger">{{field.errors[0]}}</span><br/>{% endif %}
+		    	{{ field.description.help }}
+
+		  </div>
+		{% endif %}
+	{% endfor %}
+
+{%- endmacro %}
+
+
+{% macro horizontal_form_group(form, fields, displayonly=False) -%}
+
+	{% for field in fields %}
+		{% if field.type == 'BooleanField' %}
+		  <div class="form-group checkbox{% if field.errors %} has-error{% endif %}">
+		    {{ field.label(class="col-md-2 control-label", style="font-weight:bold") }}
+		    <div class="col-md-6">
+		      {{ field() }}&nbsp;
+		      
+		      {{ field.description.help }}
+		      {% if field.errors %}<span style="color: red;"> - {{field.errors[0]}}</span>{% endif %}
+		    </div>
+		  </div>
+		{% elif field.type == 'DateField' %}
+		  <div class="form-group{% if field.errors %} has-error{% endif %}">
+		    {{ field.label(class="col-md-2 control-label") }}
+		    <div class="col-md-6">
+		      {% if displayonly %}
+		        {{ field.data }}
+		      {% else %}
+  		        {{ field(class="form-control", placeholder=field.description.placeholder,
+  		                 years=range(1998, 1925, -1)) }}
+              {% endif %}
+		    </div>
+		    <div class="col-md-4">
+		    	{% if field.errors %}<span class="text-danger">{{field.errors[0]}}</span><br/>{% endif %}
+		    	{{ field.description.help }}
+		    </div>
+		  </div>
+		{% else %}
+		  <div class="form-group{% if field.errors %} has-error{% endif %}">
+		    {{ field.label(class="col-md-2 control-label") }}
+		    <div class="col-md-6">
+		      {% if displayonly %}
+		        {{ field.data }}
+		      {% else %}
+  		        {{ field(class="form-control", placeholder=field.description.placeholder) }}
+              {% endif %}
+		    </div>
+		    <div class="col-md-4">
+		    	{% if field.errors %}<span class="text-danger">{{field.errors[0]}}</span><br/>{% endif %}
+		    	{{ field.description.help }}
+		    </div>
+		  </div>
+		{% endif %}
+	{% endfor %}
+
+{%- endmacro %}
+
+
+
+{% macro form_group_inline(form, fields, displayonly=False) -%}
+
+	{% for field in fields %}
+		{% if field.type == 'BooleanField' %}
+		  <div class="checkbox{% if field.errors %} has-error{% endif %}">
+		    <label>
+		      {{ field() }}&nbsp;{{ field.description.help }}
+		    	{% if field.errors %}<span style="color: red;"> - {{field.errors[0]}}</span>{% endif %}
+		    </label>
+		  </div>
+		{% else %}
+		  <div class="form-group{% if field.errors %} has-error{% endif %}">
+		    <label for="{{ field.name }}" class="col-md-2 control-label">{{ field.label }}</label>
+		    <div class="col-md-6">
+		      {% if displayonly %}
+		        {{ field.data }}
+		      {% else %}
+    		    {{ field(class="form-control", placeholder=field.description.placeholder)}}
+              {% endif %}
+              <p class="help-block">
+                  {% if field.errors %}<span class="text-danger">{{field.errors[0]}}</span><br/>{% endif %}
+                  {{ field.description.help }}
+		      </p>
+		    </div>
+		  </div>
+		{% endif %}
+	{% endfor %}
+
+{%- endmacro %}

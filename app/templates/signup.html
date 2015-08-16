@@ -1,0 +1,30 @@
+{% from 'helpers.html' import horizontal_form_group %}
+
+{% extends "base.html" %}
+{% block content %}
+
+<div class="col-md-3">
+  <p>Registration is Free!</p>
+</div>
+
+<div class="col-md-9">
+	
+	<h1>Signup Now!</h1>
+
+
+    <form class="boxed-form form-horizontal" role="form" action="{{ url_for('signup') }}" method="post">
+        {{ form.hidden_tag() }}
+        
+        {{ horizontal_form_group(form, [ form.invite_code, form.email, form.givenname, form.surname, form.password, form.confirm, form.accept_tos ]) }}
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

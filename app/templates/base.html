@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <meta name="description" content="">
+	    <meta name="author" content="">
+	    <link rel="shortcut icon" type="image/png" href="/static/images/favicon.png">
+	    
+	    {% if title %}
+			<title>{{title}} - Disboard</title>
+		{% else %}
+			<title>Disboard</title>
+		{% endif %}
+		
+		<!-- Bootstrap core CSS -->
+	    <link href="/static/css/bootstrap.css" rel="stylesheet">
+	
+	    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	    <!--[if lt IE 9]>
+	      <script src="../../assets/js/html5shiv.js"></script>
+	      <script src="../../assets/js/respond.min.js"></script>
+	    <![endif]-->
+	    
+	    {% if use_editable %}
+	    <link href="/static/css/bootstrap-editable.css" rel="stylesheet">
+	    {% endif %}
+	    <!-- Custom styles for this template -->
+		<link href="/static/css/disboard.css" rel="stylesheet">
+
+	</head>
+	
+	<body>
+		{% if g.user is defined and g.user.is_authenticated() %}
+			<header class="navbar navbar-default navbar-loggedin navbar-fixed-top" role="banner">
+				<div class="container">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						</button>
+						<a class="navbar-brand" href="#">Disboard</a>
+					</div>
+			
+					<nav class="collapse navbar-collapse" role="navigation">
+			            <div class="navbar-collapse collapse">
+			              <ul class="nav navbar-nav">
+			                <li class="{% if request.path.find('/games') >= 0 %}active{% endif %}"><a href="{{ url_for('game_list') }}"><span class="glyphicon glyphicon-tower"></span>&nbsp;Games</a></li>
+
+
+                            {% if g.role in ['owner', 'admin'] %}
+    			                <li class="dropdown">
+    			                  <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span>&nbsp;Settings <b class="caret"></b></a>
+    			                  <ul class="dropdown-menu">
+    			                    <li><a href="">Accounts</a></li>
+    			                  </ul>
+    			                </li>
+    			             {% endif %}
+
+			              </ul>
+			              
+			              <div class="navbar-right">
+			              	<ul class="nav navbar-nav">
+    			                <li class="dropdown">
+    			                  <a href="#" class="dropdown-toggle hidden-sm" data-toggle="dropdown">{{ g.user.email }} <b class="caret"></b></a>
+    			                  <a href="#" class="dropdown-toggle visible-sm" data-toggle="dropdown"> <div class="glyphicon glyphicon-user"></div> <b class="caret"></b></a>
+
+    			                  <ul class="dropdown-menu">
+    			                    <li><a href="{{ url_for('my_account') }}">My Account</a></li>
+    			                    <li><a href="{{ url_for('logout') }}">Log Out</a></li>
+    			                  </ul>
+    			                </li>
+			              	</ul>
+			              </div>
+
+			            </div>
+					</nav>
+	
+				</div>
+			</header>
+
+		{% else %}
+			<header class="navbar navbar-inverse navbar-fixed-top" role="banner">
+				<div class="container">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						</button>
+						<a class="navbar-brand" href="#">Disboard</a>
+					</div>
+			
+					<nav class="collapse navbar-collapse" role="navigation">
+			            <div class="navbar-collapse collapse">
+			              <ul class="nav navbar-nav">
+			                <li class="active"><a href="/">Home</a></li>
+			                <li><a href="{{ url_for('about') }}">About</a></li>
+			                <li><a href="{{ url_for('signup') }}">Sign Up</a></li>
+			              </ul>
+				          
+
+                          <!-- Display the signin form if there's room -->
+			              <form action="{{ url_for('login') }}" class="navbar-form navbar-right visible-md visible-lg" method="POST">
+				            <div class="form-group">
+				              <input type="text" name="email" placeholder="Email" class="form-control">
+				            </div>
+				            <div class="form-group">
+				              <input type="password" name="password" placeholder="Password" class="form-control">
+				            </div>
+				            <button type="submit" class="btn btn-success">Sign in</button>
+				          </form>
+				          <!-- Otherwise just display the sign-in button -->
+				          <ul class="nav navbar-nav navbar-right visible-sm">
+			                <li><a href="{{ url_for('login') }}">Sign In</a></li>
+			              </ul>
+          
+			            </div>
+					</nav>
+	
+				</div>
+			</header>
+		{% endif %}
+
+		<div class="container base-container">
+		    <div id="alert-container">
+              {% with messages = get_flashed_messages() %}
+              {% if messages %}
+            	{% for message in messages %}
+                	{% if message is not string %}
+                	    {% set alert_level = message[0] %}
+                	    {% set flash_text  = message[1] %}
+                    {% else %}
+                	    {% set alert_level = 'warning' %}
+                	    {% set flash_text  = message %}
+                	{% endif %}
+                	<div class="alert alert-{{ alert_level }} alert-dismissable">
+                		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                		{{ flash_text }}
+                  	</div>
+              	{% endfor %}
+              {% endif %}
+              {% endwith %}
+		    </div>
+
+			{%block content %}{% endblock %}
+		    
+		    <div class="footer-padding"></div>  <!-- padding content for footer -->
+		
+		</div>
+		
+		<!-- FOOTER -->
+        <footer>
+			<p class="pull-right"><a href="#">Back to top</a></p>
+			<p>&copy; 2015 Axcella, LLC &middot; <a href="#">Privacy</a> &middot; <a href="#termsModal" role="button" data-toggle="modal" data-target="#termsModal">Terms</a></p>
+		</footer>
+      
+		<!-- Bootstrap core JavaScript
+		================================================== -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script src="/static/js/jquery-2.1.4.min.js"></script>
+		<script src="/static/js/jquery-ui.min.js"></script>
+		<script src="/static/js/jquery.ui.touch-punch.min.js"></script>
+		<script src="/static/js/bootstrap.min.js"></script>
+		{% if use_d3 %}
+		<script src="/static/js/d3/d3.min.js" type="text/javascript"></script>
+		{% endif %}
+		{% if use_editable %}
+		<script src="/static/js/bootstrap-editable.min.js" type="text/javascript"></script>
+        {% endif %}
+    
+        <!-- Terms Modal -->
+        <div class="modal fade" id="termsModal" tabindex="-1" role="dialog" aria-labelledby="termsModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="termsModalLabel">Terms & Conditions</h4>
+              </div>
+              <div id="termsBody" class="modal-body">
+                Loading...
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript">
+            $('#termsModal').on('show.bs.modal', function(e) {
+               // Load the terms
+        		$.ajax({
+            		url: '/static/license.txt',
+            		method: 'GET',
+        		}).done(function (data) {
+                    $('#termsBody').html('<pre>' + data + '</pre>');
+        		}).fail(function(data) {
+                    $('#termsBody').html('Error loading License.');
+                });
+            });
+
+            {% if use_editable %}
+                // Activate editable fields
+                $(".editable").editable();
+                $(".editable_required").editable({
+                    validate: function(value) {
+                        if($.trim(value) == '') return 'This field is required';
+                    }
+                });
+                $(".editable_inline").editable({
+                    mode: 'inline'
+                });
+                $(".editable_inline_required").editable({
+                    mode: 'inline',
+                    validate: function(value) {
+                        if($.trim(value) == '') return 'This field is required';
+                    }
+                });
+            {% endif %}
+            
+        </script>
+        {% block modal %}{% endblock %}
+		{% block script %}{% endblock %}
+	</body>
+</html>

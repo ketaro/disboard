@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <!-- Carousel
+    ================================================== -->
+    <div id="myCarousel" class="carousel slide">
+      <!-- Indicators -->
+      <ol class="carousel-indicators">
+        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+        <li data-target="#myCarousel" data-slide-to="1"></li>
+        <li data-target="#myCarousel" data-slide-to="2"></li>
+      </ol>
+      <div class="carousel-inner">
+
+        <div class="item active">
+          <img src="/static/images/slide1.jpg" width="100%" height="500" alt="First slide">
+          <div class="container">
+            <div class="carousel-caption">
+              <h1>Anime@Midnight</h1>
+              <p>Software to manage a live game.</p>
+              <p><a class="btn btn-large btn-primary" href="/signup">Sign up today</a></p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <a class="left carousel-control" href="#myCarousel" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
+      <a class="right carousel-control" href="#myCarousel" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
+    </div><!-- /.carousel -->
+
+
+
+    <!-- Marketing messaging and featurettes
+    ================================================== -->
+    <!-- Wrap the rest of the page in another container to center all the content. -->
+
+    <div class="container marketing">
+
+      <!-- Three columns of text below the carousel -->
+      <div class="row">
+        <div class="col-md-4">
+          <img class="img-circle" src="" alt="">
+          <h2>One</h2>
+          <p>Stuff</p>
+          <p><a class="btn btn-default" href="{{ url_for('.about') }}">View details &raquo;</a></p>
+        </div><!-- /.col-lg-4 -->
+        <div class="col-md-4">
+          <img class="img-circle" src="" alt="">
+          <h2>Two</h2>
+          <p>and.</p>
+          <p><a class="btn btn-default" href="{{ url_for('.about') }}">View details &raquo;</a></p>
+        </div><!-- /.col-lg-4 -->
+        <div class="col-md-4">
+          <h2>Three</h2>
+          <p>Junk.
+          </p>
+          
+        </div><!-- /.col-lg-4 -->
+      </div><!-- /.row -->
+
+
+
+{% endblock %}
