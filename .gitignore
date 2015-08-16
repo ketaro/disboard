@@ -1,0 +1,9 @@
+*.py[co]
+env
+*.swp
+tmp
+app/static/photos
+app.db
+email_data
+.floo
+.flooignore
