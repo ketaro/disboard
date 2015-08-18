@@ -1,8 +1,8 @@
 from flask import render_template, flash, redirect, session, request, g, url_for
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app import app, db, lm
-from app.forms.main import LoginForm, SignupForm
-from app.model import User
+from app.forms.main import LoginForm, SignupForm, QuestionForm, SlideForm
+from app.model import User, Category, Question, Slide
 from app.helpers import hash_password, flash_errors
 from sqlalchemy.exc import IntegrityError
 
@@ -145,3 +145,93 @@ def signup():
                            form=form)
 
 
+
+@app.route('/account')
+def my_account():
+    return 'my account'
+
+
+@app.route('/game')
+def game_list():
+    categories = Category.query.all()
+    
+    return render_template('game/list.html', categories=categories)
+
+
+@app.route('/game/view')
+def game_view():
+    return render_template('game/view.html')
+
+@app.route('/game/presenter')
+def game_presenter():
+    return render_template('game/presenter.html')
+
+
+@app.route('/game/question/new', methods=['GET', 'POST'])
+def question_new():
+    question = Question()
+    form = QuestionForm()
+    
+    if form.validate_on_submit():
+        question.title  = form.title.data
+        
+        # Look for existing Category
+        category = Category.query.filter_by(name=form.category.data).first()
+        if not category:
+            category = Category(name=form.category.data)
+        
+        question.category = category
+
+        try:
+            db.session.add(question)
+            db.session.commit()
+            
+            return redirect(url_for('question_edit', question_id=question.id))
+            
+        except IntegrityError as e:
+            db.session.rollback()
+            reason = e.message
+            
+            flash(reason)
+    
+    return render_template('game/new_question.html', form=form)
+
+
+@app.route('/game/question/<question_id>/edit', methods=['GET', 'POST'])
+def question_edit(question_id):
+    
+    question = Question.query.get(question_id)
+    if not question:
+        abort(404)
+    
+    form = QuestionForm()
+    slide_form = SlideForm()
+
+    if form.validate_on_submit():
+        question.title = form.title.data
+
+        # Look for existing Category
+        category = Category.query.filter_by(name=form.category.data).first()
+        if not category:
+            category = Category(name=form.category.data)
+        
+        question.category = category
+
+        try:
+            db.session.commit()
+            
+            return redirect(url_for('question_edit', question_id=question.id))
+            
+        except IntegrityError as e:
+            db.session.rollback()
+            reason = e.message
+            
+            flash(reason)
+    
+    if request.method == 'GET':
+        form.title.data     = question.title
+        form.category.data  = question.category.name 
+
+    return render_template('game/edit_question.html', form=form, 
+                                                      question=question,
+                                                      slide_form=slide_form)

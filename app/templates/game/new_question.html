@@ -1,0 +1,31 @@
+{% from 'helpers.html' import form_group %}
+
+{% extends "base.html" %}
+{% block content %}
+
+    <h1>New Question</h1>
+    
+    <form action="{{ url_for('question_new') }}" method="post" role="form">
+        {{ form.hidden_tag() }}
+        
+        <div class="row">
+            <div class="col-md-5">
+
+                {{ form_group(form, [form.title, form.category ]) }}
+                
+              <button type="submit" class="btn btn-default">Create</button>
+                
+            </div>
+
+            <div class="col-md-7">
+                
+
+            </div>
+        </div>
+        
+
+    </form>
+
+
+{% endblock %}
+

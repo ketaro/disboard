@@ -144,7 +144,9 @@
               {% endwith %}
 		    </div>
 
+            <div class="page-content">
 			{%block content %}{% endblock %}
+            </div>
 		    
 		    <div class="footer-padding"></div>  <!-- padding content for footer -->
 		
@@ -188,6 +190,20 @@
           </div>
         </div>
         <script type="text/javascript">
+            function display_alert(status, msg) {
+                $('#alert-container').html(
+                    '<div class="alert alert-' + status + ' alert-dismissable">'
+                        + '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>'
+                        + msg
+                        + '</div>'
+                );
+                
+                window.setTimeout(function() {
+                    $('.alert-success').alert('close');
+                }, 5000);
+                
+            }            
+            
             $('#termsModal').on('show.bs.modal', function(e) {
                // Load the terms
         		$.ajax({

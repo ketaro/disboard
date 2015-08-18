@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import TextField, BooleanField, PasswordField, DateField
+from wtforms import TextField, BooleanField, PasswordField, DateField, SelectField
 from wtforms.validators import Required, Length, Email, EqualTo, DataRequired, AnyOf
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from app.forms.widgets import SelectDateWidget, ButtonGroupWidget
@@ -28,3 +28,23 @@ class SignupForm(Form):
     invite_code = TextField('Invitation Code',  validators=[Required(), AnyOf(['AskMeAboutAnime'], 'Invalid Invitation Code')],
                                                 description={'help': 'Registrations are currently invite only.'} )
 
+
+
+class QuestionForm(Form):
+    title    = TextField('Title / Short Description', validators=[Required(), Length(max=50)],
+                                    description={'placeholder': 'Question Title'})
+    category = TextField('Category', validators=[Required(), Length(max=50)],
+                                    description={'placeholder': 'Category Name'})
+
+
+SLIDE_TYPES = [
+    ('title',   'Title'),
+    ('text',    'Text'),
+    ('choice',  'Multiple Choice'),
+    ('video',   'Video')
+]
+
+class SlideForm(Form):
+    slide_type  = SelectField('Slide Type', choices=SLIDE_TYPES, validators=[DataRequired()])
+    prompt      = TextField('Prompt Text', validators=[Length(max=1000)])
+    

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div class="row">
+        <div class="col-sm-6">
+            <h1>Game List</h1>
+        </div>
+        
+        <div class="col-sm-6">
+            <div class="btn-group pull-right">
+                <a href="{{ url_for('game_view') }}" target="_blank" class="btn btn-default" role="button"><span class="glyphicon glyphicon-share"></span> Game View</a>
+                <a href="{{ url_for('game_presenter') }}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-bullhorn"></span> Presenter View</a>
+            </div>
+        </div>
+    </div>
+    
+    <ul>
+    {% for category in categories %}
+        <li>{{ category.name }}</li>
+        <ul>
+            {% for question in category.questions %}
+                <li><a href="{{ url_for('question_edit', question_id=question.id) }}">{{ question.title }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+    </ul>
+
+{% endblock %}

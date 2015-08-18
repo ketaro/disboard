@@ -1,0 +1,365 @@
+{% from 'helpers.html' import form_group %}
+
+{% extends "base.html" %}
+{% block content %}
+
+    <h1>Edit Question</h1>
+    
+    <div class="row">
+        <div class="col-md-5">
+            <form action="{{ url_for('question_edit', question_id=question.id) }}" method="post" role="form">
+                {{ form.hidden_tag() }}
+
+                {{ form_group(form, [form.title, form.category ]) }}
+    
+                <button type="submit" class="btn btn-default">Save</button>
+
+            </form>
+            <p></p>
+            
+            <div class="row">
+              <div class="col-sm-9">
+                <ul id="slidelist" class="droplist droptrue">
+                  <li class="pin title">Slides</li>
+                  {% for slide in question.slides %}
+                    {% if slide.slide_type == 'title' %}
+                      <li class="btn btn-primary slide_btn" data-slide_id="{{ slide.id }}"><span class="glyphicon glyphicon-blackboard pull-left"></span> {{ slide.content[0:30] }}{% if slide.content|length > 30 %}...{% endif %}</li>
+                    {% else %}
+                      <li class="btn btn-primary slide_btn" data-slide_id="{{ slide.id }}"><span class="glyphicon glyphicon-question-sign"></span> {{ slide.content }}</li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              </div>
+              
+              <div class="col-sm-3">
+                  <button class="btn btn-success" id="add_slide_btn"><span class="glyphicon glyphicon-plus"></span> Add</button>
+              </div>
+            </div>
+            
+            
+        </div>
+
+        <div class="col-md-7">
+            <form id="slide_form" class="hide">
+                {{ slide_form.hidden_tag() }}
+                <input type="hidden" id="slide_id_field" name="slide_id" value="" />
+
+                {{ form_group(slide_form, [slide_form.slide_type ]) }}
+
+              
+                <div class="slide_details">
+                    <!--  Slide Type: Title -->
+                    <div class="slide_detail active" id="slide_title">
+                      <div class="form-group">
+                        <label for="category">Title</label>
+                        <input type="text" class="form-control" name="title" placeholder="Slide Title">
+                      </div>
+        
+                      <div class="form-group">
+                        <label for="background">Background</label>
+                        <input type="file" name="background">
+                      </div>
+        
+                    </div>
+    
+                    <!--  Slide Type: Text -->
+                    <div class="slide_detail" id="slide_text">
+                      <div class="form-group">
+                        <label for="category">Text</label>
+                        <textarea name="slide_text" class="form-control" rows="5"></textarea>
+                      </div>
+        
+                      <div class="form-group">
+                        <label for="background">Background</label>
+                        <input type="file" name="background">
+                      </div>
+                        
+                    </div>
+    
+                    <!--  Slide Type: Multiple Choice -->
+                    <div class="slide_detail" id="slide_choice">
+                      <div class="form-group">
+                        <label for="category">Question</label>
+                        <textarea name="slide_choicetext" class="form-control" rows="3"></textarea>
+                      </div>
+        
+                      <div class="form-group">
+                        <label for="answer_a"></label>
+                        <div class="input-group">
+                          <div class="input-group-addon">A</div>
+                          <input id="choice_a" type="text" class="form-control" name="answer_a" placeholder="Answer A">
+                        </div>
+        
+                        <div class="input-group">
+                          <div class="input-group-addon">B</div>
+                          <input id="choice_b" type="text" class="form-control" name="answer_b" placeholder="Answer B">
+                        </div>
+        
+                        <div class="input-group">
+                          <div class="input-group-addon">C</div>
+                          <input id="choice_c" type="text" class="form-control" name="answer_c" placeholder="Answer C">
+                        </div>
+        
+                        <div class="input-group">
+                          <div class="input-group-addon">D</div>
+                          <input id="choice_d" type="text" class="form-control" name="answer_d" placeholder="Answer D">
+                        </div>
+                      </div>
+                    </div>
+    
+                    <!--  Slide Type: Video -->
+                    <div class="slide_detail" id="slide_video">
+                      <div class="form-group">
+                        <label for="background">Video File</label>
+                        <input type="file" name="video">
+                      </div>
+                    </div>
+    
+                </div> <!-- /.slide_details -->
+              
+                <div class="form-group">
+                    <label for="prompt_text">Prompt Text</label>
+                    <textarea name="prompt_text" class="form-control" rows="5"></textarea>
+                </div>
+              
+                <button class="btn btn-default" id="save_slide_btn" type="button">Save Slide</button>
+
+            </form>
+
+        </div>
+    </div>
+        
+
+
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+
+    // Make Slides list sortable/draggable
+	$("ul.droptrue").sortable({
+		connectWith: "ul",
+		placeholder: "droplist-placeholder",
+		items: '> li:not(.pin)',
+//		cancel: '.approval_required',
+//		change: onDeptPrefChange,
+//		update: onDeptPrefUpdate
+	});
+	
+	
+	
+	// Load Slides
+	function loadSlides() {
+    	// Clear slides
+    	$('#slidelist li.slide_btn').remove();
+    	
+    	$.ajax({
+        	url: '{{ url_for("ajax_slides", question_id=question.id) }}',
+        	method: 'GET',
+        	dataType: 'json'
+    	}).done(function(data) {
+        	for (i=0; i < data.slides.length; i++) {
+            	slide = data.slides[i];
+            	
+            	slide_html = '<li class="btn btn-info slide_btn" data-slide_id="' + slide.slide_id + '">';
+            	
+            	switch(slide.slide_type) {
+                	case 'title':
+                    	slide_html += '<span class="glyphicon glyphicon-align-center pull-left"></span> ';
+                        if (slide.content) {
+                        	slide_html += slide.content.substr(0, 30);
+                        	if (slide.content.length > 30)
+                        	    slide_html += '...';
+                        }
+                        break;
+                    
+                    case 'text':
+                    	slide_html += '<span class="glyphicon glyphicon-text-size pull-left"></span> ';
+                        if (slide.content) {
+                        	slide_html += slide.content.substr(0, 30);
+                        	if (slide.content.length > 30)
+                        	    slide_html += '...';
+                        }
+                        break;
+                    
+                    case 'choice':
+                    	slide_html += '<span class="glyphicon glyphicon-th-list pull-left"></span> ';
+                        if (slide.content) {
+                            var choice_data = JSON.parse(slide.content);
+                            
+                        	slide_html += choice_data.question.substr(0, 30);
+                        	if (choice_data.question.length > 30)
+                        	    slide_html += '...';
+                        }
+                        break;
+                    
+                    
+                    default:
+                    	slide_html += '<span class="glyphicon glyphicon-question-sign pull-left"></span> ';
+                        if (slide.content) {
+                        	slide_html += slide.content.substr(0, 30);
+                        	if (slide.content.length > 30)
+                        	    slide_html += '...';
+                        }
+                    
+            	}
+            	slide_html += '</li>';
+            	
+            	$('#slidelist').append(slide_html);
+
+        	}
+
+            // Add click handler to all the new slide buttons
+            $('.slide_btn').click(onSlideBtnClick);
+            
+            // If the slide form is still open, show its slide as selected
+            var slide_id = $('#slide_form input[name=slide_id]').val();
+            if (slide_id) {
+                $('#slidelist li[data-slide_id=' + slide_id + ']').removeClass('btn-info');
+                $('#slidelist li[data-slide_id=' + slide_id + ']').addClass('btn-primary');
+            }
+            
+        	
+    	}).fail(function(data) {
+        	display_alert('danger', 'Unable to load slides.');
+    	});
+	}
+	
+	// Handle when the Slide Type menu changes
+	function setSlideTypeForm(type) {
+        $('.slide_detail').removeClass('active');
+        $('#slide_' + type).addClass('active');
+	}
+    $('#slide_type').change(function(e) {
+        setSlideTypeForm($(this).val());
+    });
+    
+    
+    // Handle adding a new slide
+    $('#add_slide_btn').click(function(e) {
+        $('#slide_form').removeClass('hide');
+
+        // Clear form
+        $('#slide_form input[type=text]').val('');
+        $('#slide_form textarea').val('')
+        $('#slide_id_field').val('');
+        $('#save_slide_btn').html('Add New Slide')
+    })
+    
+    
+    // Save / Create Slide
+    $('#save_slide_btn').click(function(e) {
+        // Disable the button to prevent multiple clicks
+        $('#save_slide_btn').prop('disabled', true);
+        $('#save_slide_btn').html('Saving...');
+        
+        data = {}
+        data['slide_id']   = $('#slide_form input[name=slide_id]').val();
+        data['question_id'] = {{ question.id }};
+        data['slide_type'] = $('#slide_form select[name=slide_type]').val();
+        data['prompt'] = $('#slide_form textarea[name=prompt_text]').val();
+        
+        switch(data['slide_type']) {
+            case 'title':
+                data['content'] = $('#slide_title input[name=title]').val();
+                break;
+            case 'text':
+                data['content'] = $('#slide_text textarea[name=slide_text]').val();
+                break;
+            case 'choice':
+                data['content'] = JSON.stringify({
+                    question: $('#slide_choice textarea[name=slide_choicetext]').val(),
+                    choice_a: $('#slide_choice #choice_a').val(),
+                    choice_b: $('#slide_choice #choice_b').val(),
+                    choice_c: $('#slide_choice #choice_c').val(),
+                    choice_d: $('#slide_choice #choice_d').val()
+                });
+                break;
+            case 'video':
+                break;
+        }
+
+        
+        $.ajax({
+            url: '{{ url_for("ajax_slide_save") }}',
+            method: 'POST',
+            dataType: 'json',
+            data: data
+        }).done(function(data) {
+            $('#save_slide_btn').prop('disabled', false);
+            $('#save_slide_btn').html('Saved <span class="glyphicon glyphicon-ok"></span>');
+            
+            // Reload Slide Data
+            loadSlides();
+            
+        }).fail(function(data) {
+            $('#save_slide_btn').prop('disabled', false);
+            $('#save_slide_btn').html('Save Failed <span class="glyphicon glyphicon-remove"></span>');
+            
+        });
+    });
+    
+    function onSlideBtnClick(e) {
+        // Show button is "selected"
+        $('#slidelist li.slide_btn').removeClass('btn-primary');
+        $('#slidelist li.slide_btn').addClass('btn-info');
+        $(this).removeClass('btn-info');
+        $(this).addClass('btn-primary');
+
+        $('#slide_form').addClass('hide');
+        
+        // Load Slide Data
+        $.ajax({
+            url: '{{ url_for("ajax_slide") }}',
+            method: 'GET',
+            data: {
+                slide_id: $(this).data('slide_id')
+            }
+        }).done(function(data) {
+            // Update Form with Slide Data
+            $('#slide_type').val(data.slide.slide_type);
+            setSlideTypeForm(data.slide.slide_type);
+            
+            $('#slide_form input[name=slide_id]').val(data.slide.slide_id);
+            $('#slide_form textarea[name=prompt_text]').val(data.slide.prompt);
+            
+            $('#save_slide_btn').html('Save Slide')
+            
+            switch(data.slide.slide_type) {
+                case 'title':
+                    $('#slide_title input[name=title]').val(data.slide.content);
+                    break;
+                case 'text':
+                    $('#slide_text textarea[name=slide_text]').val(data.slide.content);
+                    break;
+                case 'choice':
+                    var choice_data = JSON.parse(data.slide.content);
+                    $('#slide_choice textarea[name=slide_choicetext]').val(choice_data.question);
+                    $('#slide_choice #choice_a').val(choice_data.choice_a);
+                    $('#slide_choice #choice_b').val(choice_data.choice_b);
+                    $('#slide_choice #choice_c').val(choice_data.choice_c);
+                    $('#slide_choice #choice_d').val(choice_data.choice_d);
+
+            }
+
+            // Unhide Slide Form
+            $('#slide_form').removeClass('hide');
+            
+            
+        }).fail(function(data) {
+            display_alert('danger', 'Unable to load slide data.');
+        })
+        
+        
+    }
+    
+    
+
+    $(function() {
+        loadSlides();
+    });
+    
+    
+</script>
+
+{% endblock %}

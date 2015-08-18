@@ -35,7 +35,7 @@ migrate = Migrate(app, db)
 
 # Views These need to be after the db
 from app import views
-
+from app import ajax_views
 
 
 # Manager (Command Line) commands

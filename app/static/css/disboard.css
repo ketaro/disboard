@@ -14,6 +14,10 @@ body {
   height: 100%;
 }
 
+.page-content {
+    margin-top: 20px;
+}
+
 footer {
     position: fixed;
     bottom: 0px;
@@ -192,6 +196,48 @@ footer {
     font-size: 50px;
   }
 
+}
+
+
+/* Slides Droplist */
+.droplist {
+    list-style-type: none;
+    margin: 0;
+    padding: 5px;
+    float: left;
+    margin-right: 10px;
+    background: #eee;
+    width: 100%;
+    min-height: 300px;
+    margin-bottom: 15px;
+}
+
+.droplist li {
+    margin: 2px;
+    padding: 5px;
+    width: 100%;
+    border: 1px solid #d3d3d3;
+}
+
+.droplist li.title {
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    height: 45px;
+    border-bottom: double 3px gray;
+}
+
+.droplist-placeholder {
+    height: 30px;
+    
+}
+
+.slide_detail {
+    display: none;
+}
+
+.slide_detail.active {
+    display: block;
 }
 
 @media (min-width: 992px) {

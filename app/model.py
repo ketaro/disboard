@@ -49,3 +49,47 @@ class User(db.Model):
     def first_last(self):
         return " ".join([self.givenname, self.surname])
 
+
+
+class Category(db.Model):
+    __tablename__ = 'categories'
+    
+    id          = db.Column(db.Integer, primary_key=True)
+    name        = db.Column(db.String(50), index=True, nullable=False)
+    
+    questions   = db.relationship('Question', backref='category', order_by='Question.order_id')
+
+class Question(db.Model):
+    __tablename__ = 'questions'
+    
+    id          = db.Column(db.Integer, primary_key=True)
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), index=True, nullable=False)
+    status      = db.Column(db.Enum('active', 'inactive'), default='active', nullable=False)
+    title       = db.Column(db.String(50))
+    order_id    = db.Column(db.Integer, default=0)
+    
+    slides      = db.relationship('Slide', backref='question', order_by='Slide.order_id')
+
+
+class Slide(db.Model):
+    __tablename__ = 'slides'
+    
+    id          = db.Column(db.Integer, primary_key=True)
+    slide_type  = db.Column(db.Enum('title', 'text', 'choice', 'video'), default='text', nullable=False)
+    question_id = db.Column(db.Integer, db.ForeignKey('questions.id'), nullable=False, index=True)
+    order_id    = db.Column(db.Integer, default=0)
+    content     = db.Column(db.Text())
+    prompt      = db.Column(db.String(1000))
+    
+    
+    @property
+    def hashdata(self):
+        r = {
+            'slide_id':   self.id,
+            'slide_type': self.slide_type,
+            'content':    self.content,
+            'prompt':     self.prompt,
+            'order_id':   self.order_id
+        }
+        
+        return r
